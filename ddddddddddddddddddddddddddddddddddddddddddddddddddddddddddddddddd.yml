@@ -1,0 +1,99 @@
+version: '3.7'
+
+services:
+  ldparser5:
+    image: 192.141.53.4:5000/ld/runtimeparser5:v20190105.0_Release
+    hostname: ldparser5
+    networks:
+      - szy_inner
+    deploy:
+      restart_policy:
+        delay: 10s
+        max_attempts: 10
+        window: 60s
+  yitu:
+    image: 192.141.53.4:5000/ld/yitu:v20190619
+    hostname: yitu
+    volumes:
+      - "/data/recognition190212/project:/code/project"
+      - "/data/recognition190212/data/config.json:/code/data/config.json"
+    networks:
+      - szy_inner
+
+  yuyi:
+    image: 192.141.53.4:5000/ld/fazhi:v20190620
+    hostname: yuyi
+    networks:
+      - szy_inner
+    deploy:
+      restart_policy:
+        delay: 10s
+        max_attempts: 10
+        window: 60s
+
+  dictionary:
+    image: 192.141.53.4:5000/techpub/data-dictionary:product-develop-238
+    hostname: dictionary
+    networks:
+      - szy_inner
+    environment:
+      spring.profiles.active: "online" 
+      spring.cloud.bootstrap.enabled: "false" 
+    deploy:
+      restart_policy:
+        delay: 10s
+        max_attempts: 10
+        window: 60s
+
+  ldservice:
+    image: 192.141.53.4:5000/techpub/law-dissector-bj4zy:bjszy-3253
+    hostname: ldservice
+    ports:
+      - "8081:8080"
+    networks:
+      - szy_inner
+    environment:
+      spring.profiles.active: "online" 
+      spring.cloud.bootstrap.enabled: "false" 
+    deploy:
+      restart_policy:
+        delay: 10s
+        max_attempts: 10
+        window: 60s
+
+  xzss:
+    image: 192.141.53.4:5000/techpub/yfxz/administrative_proceeding/web:v1.0.0-135
+    hostname: xzss
+    ports:
+      - "8082:8080"
+    networks:
+      - szy_inner
+    environment:
+      JAVA_OPTS: "-Xmx512m" 
+      SPRING_PROFILE: "online" 
+    deploy:
+      restart_policy:
+        delay: 10s
+        max_attempts: 10
+        window: 60s
+
+  usercenter:
+    image: 192.141.53.4:5000/techpub/yfxz/user-center-api:dev-44
+    hostname: usercenter
+    ports:
+      - "8083:8080"
+    networks:
+      - szy_inner
+    environment:
+      JAVA_OPTS: "-Xmx512m" 
+      SPRING_PROFILE: "online" 
+    deploy:
+      restart_policy:
+        delay: 10s
+        max_attempts: 10
+        window: 60s
+
+
+networks:
+  szy_inner:
+    driver: overlay
